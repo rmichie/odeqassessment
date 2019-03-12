@@ -14,5 +14,8 @@ pH_assessment <- function(pH_data) {
            pH_excursion_high = ifelse(Result_cen > pH_Max, 1, 0 ),
            pH_excursion_low = ifelse(Result_cen < pH_Min, 1, 0 )
     )
+  
+  pH_summary$excursion_cen <- pH_summary$pH_excursion
+  
   return(pH_summary)
 }

@@ -16,7 +16,7 @@
 #' results = "Results_cen", criteria = "temp_crit")
 
 temp_assessment <- function(df, datetime_column = "sample_datetime", spawn_start = "spawn_start", spawn_end = "spawn_end",
-                            results = "Results_cen", criteria = "temp_crit"){
+                            results = "Result_cen", criteria = "temp_crit"){
   
   sample_datetime <- as.symbol(datetime_column)
   spawn_start <- as.symbol(spawn_start)
@@ -76,5 +76,9 @@ temp_assessment <- function(df, datetime_column = "sample_datetime", spawn_start
       )
     }, df = temp_analysis)
   )
+  
+  temp_analysis$excursion_cen <- ifelse(temp_analysis$excursion == 1 & temp_analysis$n_excursions_3yr >= 3, 1, 0)
+  temp_analysis$spawning_crit <- 13
+  
   return(temp_analysis)
 }
