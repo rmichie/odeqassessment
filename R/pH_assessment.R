@@ -1,41 +1,18 @@
+#' Assess pH data
+#' 
+#' Asssesses pH data against the appropriate criteria and produces columns for excursions, including whether they were high or low
+#' @param pH_data
+#' @return dataframe with the following columns added; 'pH_violation', 'pH_violation_high', 'pH_violation_low.'
+#' @export
+#' @example
+#' pH_assessment(pH_data = "your-pH-data")
+#' 
 
-
-pH_assessment <- function(df) {
-  pH_summary <- df %>%
-    mutate(pH_violation = ifelse(Result_cen < pH_Min | Result_cen > pH_Max, 1, 0 ),
-           pH_violation_high = ifelse(Result_cen > pH_Max, 1, 0 ),
-           pH_violation_low = ifelse(Result_cen < pH_Min, 1, 0 )
+pH_assessment <- function(pH_data) {
+  pH_summary <- pH_data %>%
+    mutate(pH_excursion = ifelse(Result_cen < pH_Min | Result_cen > pH_Max, 1, 0 ),
+           pH_excursion_high = ifelse(Result_cen > pH_Max, 1, 0 ),
+           pH_excursion_low = ifelse(Result_cen < pH_Min, 1, 0 )
     )
-  
-  
-  
-  # Data review exports -----------------------------------------------------
-  
-  IR_export(pH_summary, "Parameters/pH/Data_Review", "pH", "data" )
-  
-  
-  
-  # Categorization ----------------------------------------------------------
-  
-  
-  pH_categories <- pH_summary %>%
-    group_by(AU_ID) %>%
-    summarise(OWRD_Basin = first(OWRD_Basin), 
-              num_Samples = n(),
-              num_violation = sum(pH_violation),
-              num_violation_high = sum(pH_violation_high),
-              num_violation_low = sum(pH_violation_low),
-              pH_low_crit = min(pH_Min),
-              pH_high_crit = max(pH_Max),
-              pH_code = first(pH_code)) %>%
-    mutate(critical_excursions = excursions_conv(num_Samples),
-           IR_category = ifelse(num_violation >= critical_excursions, 'Cat5', 
-                                ifelse((num_Samples < 5 & num_violation < 2), 'Cat3', 
-                                       #| ((num_Samples >= 5 & num_Samples <= 9) & num_violation == 1), 'Cat3', 
-                                       ifelse(num_Samples < 5 & num_violation >= 1, 'Cat3B', 
-                                              ifelse((num_Samples >= 5 &  num_violation < critical_excursions), 'Cat2', 
-                                                     #| ((num_Samples >= 5 & num_Samples <= 9) & num_violation == 0), 'Cat2', 
-                                                     "ERROR")))))
-  
-  return(pH_categories)
+  return(pH_summary)
 }

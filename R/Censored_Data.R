@@ -12,6 +12,7 @@
 #' @param results_qualifier name of column in dataframe for the qualifier. Defaults to 'Result_Operator'.
 #' @param criteria name of column in dataframe with applicable criteria value. In the case of parameters with 
 #' multiple applicable criteria (i.e. pH) the criteria should be lowest criteria. Defaults to 'criteria'.
+#' @return dataframe with additional "Results_cen" column
 #' @export
 #' 
 
