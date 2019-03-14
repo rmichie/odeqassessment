@@ -15,14 +15,14 @@
 #' spawn_start = "spawn_start", spawn_end = "spawn_end",
 #' results = "Results_cen", criteria = "temp_crit")
 
-temp_assessment <- function(df, datetime_column = "sample_datetime", spawn_start = "spawn_start", spawn_end = "spawn_end",
-                            results = "Result_cen", criteria = "temp_crit"){
+temp_assessment <- function(df, datetime_column = "sample_datetime", spawn_start_column = "spawn_start", spawn_end_column = "spawn_end",
+                            result_column = "Result_cen", criteria_column = "temp_crit"){
   
   sample_datetime <- as.symbol(datetime_column)
-  spawn_start <- as.symbol(spawn_start)
-  spawn_end <- as.symbol(spawn_end)
-  results <- as.symbol(results)
-  criteria <- as.symbol(criteria)
+  spawn_start <- as.symbol(spawn_start_column)
+  spawn_end <- as.symbol(spawn_end_column)
+  result <- as.symbol(result_column)
+  criteria <- as.symbol(criteria_column)
   
   temp_analysis <- df %>%
     mutate(# Add columns for Critcal period start and end date
@@ -35,19 +35,23 @@ temp_assessment <- function(df, datetime_column = "sample_datetime", spawn_start
       Start_spawn = mdy(Start_spawn),
       End_spawn = mdy(End_spawn),
       # If Spawn dates span a calendar year, account for year change in spawn end date
-      End_spawn = if_else(End_spawn < Start_spawn, End_spawn + years(1), End_spawn),
-      # SampleStartDate = ymd(sample_datetime), 
+      End_spawn = if_else(End_spawn < Start_spawn & sample_datetime >= End_spawn, End_spawn + years(1), # add a year if in spawn period carrying to next year
+                          End_spawn), # otherwise, keep End_spawn as current year
+      Start_spawn = if_else(End_spawn < Start_spawn & sample_datetime <= End_spawn, Start_spawn - years(1), # subtract a year if in spawn period carrying from previous year
+                           Start_spawn), # otherwise, keep Start_spawn as current year
       # Flag for results in critical period
       In_crit_period = ifelse(sample_datetime >=Crit_period_start & sample_datetime <= Cirt_period_end, 1, 0 ),
       # Print if result is in spawn or out of spawn
-      Spawn_type = ifelse((sample_datetime >= Start_spawn & sample_datetime <= End_spawn & !is.na(Start_spawn)),  "Spawn", "Not_Spawn"),
-      # Flag if result does not attain standard,  use 13 for during spawn dates, else use criteria
-      excursion = ifelse(Spawn_type == "Spawn" & Result_cen > 13, 1,
-                         ifelse(Spawn_type == "Not_Spawn" & Result_cen > criteria, 1, 0)),
-      # Flag for if excursion was in spawn period
-      Spawn_excursion = ifelse(Spawn_type == "Spawn" & excursion == 1, 1, 0 )
+      Spawn_type = ifelse((sample_datetime >= Start_spawn & sample_datetime <= End_spawn & !is.na(Start_spawn)),  "Spawn", "Not_Spawn")
     ) %>%
     arrange(sample_datetime)
+  
+  # Flag if result does not attain standard,  use 13 for during spawn dates, else use criteria
+  temp_analysis$excursion = if_else((temp_analysis$Spawn_type == "Spawn" & temp_analysis[,result_column] > 13), 1,
+                                    if_else(temp_analysis$Spawn_type == "Not_Spawn" & temp_analysis[,result_column] > temp_analysis[, criteria_column], 1, 0)
+  )
+  # Flag for if excursion was in spawn period
+  temp_analysis$Spawn_excursion = if_else(temp_analysis$Spawn_type == "Spawn" & temp_analysis$excursion == 1, 1, 0 )
   
   # For each observation, determine the number of excursions within the last 3 years, the number of samples
   # within the critical period, and the number of samples in the spawning period, all for the same station.
