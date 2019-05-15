@@ -5,8 +5,8 @@
 \title{Temperature Assessment}
 \usage{
 temp_assessment(df, datetime_column = "sample_datetime",
-  spawn_start = "spawn_start", spawn_end = "spawn_end",
-  results = "Result_cen", criteria = "temp_crit")
+  spawn_start_column = "spawn_start", spawn_end_column = "spawn_end",
+  result_column = "Result_cen", criteria_column = "temp_crit")
 }
 \arguments{
 \item{df}{dataframe with temperature data}
