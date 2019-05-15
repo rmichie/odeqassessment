@@ -27,7 +27,7 @@ Coastal_Contact_rec <- function(df, date_col = "sample_datetime"){
            Perc_Crit = 130)
   
   
-  if(length(unique(Coastal$AU_ID)) == 0) {
+  if(length(unique(Coastal$MLocID)) == 0) {
     stop("No Enterococcus Data")
   } 
   
@@ -45,15 +45,15 @@ Coastal_Contact_rec <- function(df, date_col = "sample_datetime"){
   
   print("Begin analysis")
   
-  pb <- txtProgressBar(0, length(unique(Coastal$AU_ID)), style = 3)
+  pb <- txtProgressBar(0, length(unique(Coastal$MLocID)), style = 3)
   
-  for(i in 1:length(unique(Coastal$AU_ID))){
+  for(i in 1:length(unique(Coastal$MLocID))){
     setTxtProgressBar(pb, i)
-    station <- unique(Coastal$AU_ID)[i]
+    station <- unique(Coastal$MLocID)[i]
     
     # Filter table down to single station
     Coastal_singlestation <- Coastal %>%
-      filter(AU_ID == station) %>%
+      filter(MLocID == station) %>%
       mutate(geomean_start_date = as.Date(!!SampleStartDate)-90)
     
     for(j in 1:nrow(Coastal_singlestation)){
@@ -100,63 +100,67 @@ Coastal_Contact_rec <- function(df, date_col = "sample_datetime"){
            n_above_crit = as.numeric(n_above_crit),
            perc_above_crit_10 = as.numeric(perc_above_crit_10),
            n_samples_greater_perc_crit = as.numeric(n_samples_greater_perc_crit ),
-           less_5 = as.numeric(less_5))
+           less_5 = as.numeric(less_5),
+           geomean_excursion = ifelse(geomean > bact_crit_geomean, 1, 0),
+           excursion_cen = geomean_excursion
+           )
   
+  print("Finish coastal contact rec analysis")
+  return(Coastal_analysis)
   
   # Data review -------------------------------------------------------------
   
   
-  IR_export(Coastal_analysis, "Parameters/Bacteria/Data Review", "Bacteria_Coast_Contact", "data" )
-  
-  # do the conparisons listed in methodology
-  Coastal_AU_summary <-  Coastal_analysis %>%
-    group_by(AU_ID) %>%
-    # list out the maxium geometric mean per AU
-    summarise(OWRD_Basin = first(OWRD_Basin), 
-              Max_Geomean = ifelse(!all(is.na(geomean)),max(geomean, na.rm = TRUE),NA),
-              # maximum percentage of results within geomean groups with more 10 samples that are above criteria 
-              max.perc_above_crit_10 =  ifelse(!all(is.na(perc_above_crit_10)),max(perc_above_crit_10, na.rm = TRUE),NA),
-              # maximum percentage of results within geomean groups with more 5 samples that are above criteria 
-              max.n_samples_greater_perc_crit = ifelse(all(is.na(n_samples_greater_perc_crit)), NA, max(n_samples_greater_perc_crit, na.rm= TRUE)),
-              # percent of samples that do not have 5 or more samples in each 90 day period. 
-              #Used to determine if a 90 day geomean is even possible for cat 3 or cat 3b
-              perc.insuff = sum(less_5)/n(),
-              #Maximum value of AU group. Used for 3 or 3b
-              max.value  = max(Result_cen),
-              SS_Crit = max(SS_Crit),
-              Geomean_Crit = max(Geomean_Crit),
-              Perc_Crit = max(Perc_Crit)) %>%
-    # Cat 5 is max geomean is > 35 or no geomean group has more than 10% samples above perc crit 
-    mutate(IR_category = ifelse((!is.na(Max_Geomean) & Max_Geomean > Geomean_Crit) | 
-                                  (!is.na(max.perc_above_crit_10) & max.perc_above_crit_10 > 0.10) | 
-                                  (!is.na(max.n_samples_greater_perc_crit) & max.n_samples_greater_perc_crit >= 2), "Cat5", 
-                                ifelse(perc.insuff == 1 & max.value < Perc_Crit, "Cat3", 
-                                       ifelse(perc.insuff == 1 & max.value > Perc_Crit, "Cat3B", 
-                                              "Cat2")))) 
-  
-  
-  
-  
-  # mutate(Cat5 = ifelse((!is.na(Max_Geomean) & Max_Geomean > Geomean_Crit) | 
-  #                        (!is.na(max.perc_above_crit_10) & max.perc_above_crit_10 > 0.10) | 
-  #                        (!is.na(max.perc_above_crit_5) & max.perc_above_crit_5 > Perc_Crit), 1, 0),
-  #       #Cat 3 if not cat 5 AND not enough sanples to calculte a geomean AND max value in dataset is less than 130
-  #        Cat3 = ifelse(Cat5 !=1 & perc.insuff == 1 & max.value < Perc_Crit, 1, 0),
-  #       #Cat 3b if not cat 5 AND not enough sanples to calculte a geomean AND max value in dataset is greater than 130
-  #        Cat3B = ifelse(Cat5 !=1 & perc.insuff == 1 & max.value > Perc_Crit, 1, 0),
-  #       #Cat 2 if able to calculte a geomean and max geomean is less than 35 and  max.perc_above_crit_10 < 0.10) 
-  #       #OR  able to calculte a geomean and max geomean is less than 35 and max.perc_above_crit_5 < 130
-  #        Cat2 = ifelse((
-  #          !is.na(Max_Geomean) &
-  #            Max_Geomean <= Geomean_Crit &
-  #            perc.insuff < 1 & 
-  #            !is.na(max.perc_above_crit_10) & max.perc_above_crit_10 < 0.10) |
-  #            (!is.na(Max_Geomean) &
-  #               Max_Geomean <= Geomean_Crit &
-  #               perc.insuff < 1 &
-  #               !is.na(max.perc_above_crit_5) & max.perc_above_crit_5 < Perc_Crit),1,0)
-  # )
-  
-  print("Finish coastal contact rec analysis")
-  return(Coastal_AU_summary)
+  # IR_export(Coastal_analysis, "Parameters/Bacteria/Data Review", "Bacteria_Coast_Contact", "data" )
+  # 
+  # # do the conparisons listed in methodology
+  # Coastal_AU_summary <-  Coastal_analysis %>%
+  #   group_by(AU_ID) %>%
+  #   # list out the maxium geometric mean per AU
+  #   summarise(OWRD_Basin = first(OWRD_Basin), 
+  #             Max_Geomean = ifelse(!all(is.na(geomean)),max(geomean, na.rm = TRUE),NA),
+  #             # maximum percentage of results within geomean groups with more 10 samples that are above criteria 
+  #             max.perc_above_crit_10 =  ifelse(!all(is.na(perc_above_crit_10)),max(perc_above_crit_10, na.rm = TRUE),NA),
+  #             # maximum percentage of results within geomean groups with more 5 samples that are above criteria 
+  #             max.n_samples_greater_perc_crit = ifelse(all(is.na(n_samples_greater_perc_crit)), NA, max(n_samples_greater_perc_crit, na.rm= TRUE)),
+  #             # percent of samples that do not have 5 or more samples in each 90 day period. 
+  #             #Used to determine if a 90 day geomean is even possible for cat 3 or cat 3b
+  #             perc.insuff = sum(less_5)/n(),
+  #             #Maximum value of AU group. Used for 3 or 3b
+  #             max.value  = max(Result_cen),
+  #             SS_Crit = max(SS_Crit),
+  #             Geomean_Crit = max(Geomean_Crit),
+  #             Perc_Crit = max(Perc_Crit)) %>%
+  #   # Cat 5 is max geomean is > 35 or no geomean group has more than 10% samples above perc crit 
+  #   mutate(IR_category = ifelse((!is.na(Max_Geomean) & Max_Geomean > Geomean_Crit) | 
+  #                                 (!is.na(max.perc_above_crit_10) & max.perc_above_crit_10 > 0.10) | 
+  #                                 (!is.na(max.n_samples_greater_perc_crit) & max.n_samples_greater_perc_crit >= 2), "Cat5", 
+  #                               ifelse(perc.insuff == 1 & max.value < Perc_Crit, "Cat3", 
+  #                                      ifelse(perc.insuff == 1 & max.value > Perc_Crit, "Cat3B", 
+  #                                             "Cat2")))) 
+  # 
+  # 
+  # 
+  # 
+  # # mutate(Cat5 = ifelse((!is.na(Max_Geomean) & Max_Geomean > Geomean_Crit) | 
+  # #                        (!is.na(max.perc_above_crit_10) & max.perc_above_crit_10 > 0.10) | 
+  # #                        (!is.na(max.perc_above_crit_5) & max.perc_above_crit_5 > Perc_Crit), 1, 0),
+  # #       #Cat 3 if not cat 5 AND not enough sanples to calculte a geomean AND max value in dataset is less than 130
+  # #        Cat3 = ifelse(Cat5 !=1 & perc.insuff == 1 & max.value < Perc_Crit, 1, 0),
+  # #       #Cat 3b if not cat 5 AND not enough sanples to calculte a geomean AND max value in dataset is greater than 130
+  # #        Cat3B = ifelse(Cat5 !=1 & perc.insuff == 1 & max.value > Perc_Crit, 1, 0),
+  # #       #Cat 2 if able to calculte a geomean and max geomean is less than 35 and  max.perc_above_crit_10 < 0.10) 
+  # #       #OR  able to calculte a geomean and max geomean is less than 35 and max.perc_above_crit_5 < 130
+  # #        Cat2 = ifelse((
+  # #          !is.na(Max_Geomean) &
+  # #            Max_Geomean <= Geomean_Crit &
+  # #            perc.insuff < 1 & 
+  # #            !is.na(max.perc_above_crit_10) & max.perc_above_crit_10 < 0.10) |
+  # #            (!is.na(Max_Geomean) &
+  # #               Max_Geomean <= Geomean_Crit &
+  # #               perc.insuff < 1 &
+  # #               !is.na(max.perc_above_crit_5) & max.perc_above_crit_5 < Perc_Crit),1,0)
+  # # )
+  # 
+
 }
