@@ -27,7 +27,7 @@ temp_assessment <- function(df, datetime_column = "sample_datetime", spawn_start
   temp_analysis <- df %>%
     mutate(# Add columns for Critcal period start and end date
       Crit_period_start = mdy(paste0("7/1/",year(sample_datetime))),
-      Cirt_period_end = mdy(paste0("9/30/",year(sample_datetime))),
+      Crit_period_end = mdy(paste0("9/30/",year(sample_datetime))),
       # Append spawn start and end dates with year
       Start_spawn = ifelse(!is.na(spawn_start), paste0(spawn_start,"/",year(sample_datetime)), NA ) ,
       End_spawn = ifelse(!is.na(spawn_end), paste0(spawn_end,"/",year(sample_datetime)), NA ),
@@ -40,7 +40,7 @@ temp_assessment <- function(df, datetime_column = "sample_datetime", spawn_start
       Start_spawn = if_else(End_spawn < Start_spawn & sample_datetime <= End_spawn, Start_spawn - years(1), # subtract a year if in spawn period carrying from previous year
                            Start_spawn), # otherwise, keep Start_spawn as current year
       # Flag for results in critical period
-      In_crit_period = ifelse(sample_datetime >=Crit_period_start & sample_datetime <= Cirt_period_end, 1, 0 ),
+      In_crit_period = ifelse(sample_datetime >= Crit_period_start & sample_datetime <= Crit_period_end, 1, 0 ),
       # Print if result is in spawn or out of spawn
       Spawn_type = ifelse((sample_datetime >= Start_spawn & sample_datetime <= End_spawn & !is.na(Start_spawn)),  "Spawn", "Not_Spawn")
     ) %>%
