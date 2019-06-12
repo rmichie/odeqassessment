@@ -77,9 +77,10 @@ Fresh_Contact_rec <- function(df, date_col = "sample_datetime"){
   fresh_analysis <- bind_rows(geomeanlist) %>%
     mutate(geomean = as.numeric(geomean),
            count_period = as.numeric(count_period),
-           ss_excursion = ifelse(Result_cen > bact_crit_ss, 1, 0),
-           geomean_excursion = ifelse(geomean > bact_crit_geomean, 1, 0),
-           excursion_cen = ifelse(ss_excursion == 1 | geomean_excursion == 1, 1, 0))
+           ss_excursion = if_else(Result_cen > bact_crit_ss, 1, 0),
+           geomean_excursion = if_else(is.na(geomean), 0, 
+                                       if_else(geomean > bact_crit_geomean, 1, 0)),
+           excursion_cen = if_else(ss_excursion == 1 | geomean_excursion == 1, 1, 0))
   
   print("Finish fresh contact rec analysis")
   return(fresh_analysis)
