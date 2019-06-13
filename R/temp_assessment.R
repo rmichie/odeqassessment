@@ -25,7 +25,8 @@ temp_assessment <- function(df, datetime_column = "sample_datetime", spawn_start
   criteria <- as.symbol(criteria_column)
   
   temp_analysis <- df %>%
-    mutate(# Add columns for Critcal period start and end date
+    mutate(
+      # Add columns for Critcal period start and end date
       Crit_period_start = mdy(paste0("7/1/",year(sample_datetime))),
       Crit_period_end = mdy(paste0("9/30/",year(sample_datetime))),
       # Append spawn start and end dates with year
