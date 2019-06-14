@@ -1,5 +1,20 @@
-DO_year_round_analysis <- function(df, datetime_column = "sample_datetime", spawn_start_column = "spawn_start", spawn_end_column = "spawn_end",
-                                   result_column = "Result_cen"){
+#' DO Analysis
+#' 
+#' Assesses dissolved oxygen data against the relevant standard and calculates DO sat where applicable
+#' @param df dataframe with DO data, including temperature and elevation columns
+#' @param datetime_column POSIXCT column name containing sample datetimes
+#' @param spawn_start_column mm/dd spawn start date (as characters)
+#' @param spawn_end_column mm/dd spawn end date (as characters)
+#' @param result_column numeric results column name
+#' @param temp_column column with numeric temperature values in degrees celsius (NAs for no data)
+#' @param elev_column column with numeric elevation values
+#' @return a dataframe with relevant Ecoli criteria and excursion variables added
+#' @export
+#' @example function(df = your_ecoli_data, datetime_column = "sample_datetime")
+#' 
+DO_assessment <- function(df, datetime_column = "sample_datetime", spawn_start_column = "spawn_start", 
+                          spawn_end_column = "spawn_end", result_column = "Result_cen",
+                          temp_column = "temperature", elev_column = "ELEV_Ft"){
   
   library(lubridate)
   library(odbc)
@@ -55,8 +70,12 @@ DO_year_round_analysis <- function(df, datetime_column = "sample_datetime", spaw
     mutate(spawn_excursion = if_else(in_spawn == 1 & Statistical_Base %in% c("7DADMin", "Minimum", NA) & Result_cen < 11, 1, 0))
   
   # Subset data to DO saturation relevant data
-  sat_data_yr <- data %>% filter(Statistical_Base %in% c("30DADMean"), yr_excursion == 1, DO_Class == "Cold Water")
-  sat_data_spawn <- data %>% filter(spawn_excursion == 1)
+  sat_data_yr_cont <- data %>% filter(Statistical_Base %in% c("30DADMean"), yr_excursion == 1, DO_Class == "Cold Water")
+  sat_data_spawn_cont <- data %>% filter(Statistical_Base %in% c("30DADMean", "7DADMin", "Minimum"), spawn_excursion == 1)
+  sat_data_yr_inst <- data %>% filter(is.na(Statistical_Base), yr_excursion == 1)
+  sat_data_spawn_inst <- data %>% filter(spawn_excursion == 1)
+  sat_data_inst <- bind_rows(sat_data_yr_inst, sat_data_spawn_inst)
+  sat_data
   sat_data_stns <- unique(c(sat_data_yr$MLocID, sat_data_spawn$MLocID))
   
   data$excursion_cen <- if_else(data$yr_excursion == 1 | data$spawn_excursion == 1, 1, 0)

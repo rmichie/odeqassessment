@@ -1,10 +1,19 @@
-Fresh_Contact_rec <- function(df, date_col = "sample_datetime"){
+#' Bacteria Freshwater Contact Recreation Analysis
+#' 
+#' Assesses Ecoli data against the standard
+#' @param df dataframe with Ecoli data
+#' @param datetime_column POSIXCT column name containing sample datetimes
+#' @return a dataframe with relevant Ecoli criteria and excursion variables added
+#' @export
+#' @example function(df = your_ecoli_data, datetime_column = "sample_datetime")
+
+Fresh_Contact_rec <- function(df, datetime_column = "sample_datetime"){
   print("Begin fresh contact rec analysis")
   
   #create lists to get data out of for loops
   geomeanlist = list()
   
-  SampleStartDate <- as.symbol(date_col)
+  SampleStartDate <- as.symbol(datetime_column)
   
   fresh_contact <- df %>%
     filter(BacteriaCode == 2,
