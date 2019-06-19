@@ -22,11 +22,15 @@ DO_assessment(df, datetime_column = "sample_datetime",
 
 \item{temp_column}{column with numeric temperature values in degrees celsius (NAs for no data)}
 
-\item{elev_column}{column with numeric elevation values}
+\item{elev_column}{column with numeric elevation values in feet}
 }
 \value{
 a dataframe with relevant Ecoli criteria and excursion variables added
 }
 \description{
 Assesses dissolved oxygen data against the relevant standard and calculates DO sat where applicable
+}
+\examples{
+function(df = your_ecoli_data, datetime_column = "sample_datetime")
+
 }

@@ -1,10 +1,10 @@
 #' Assess TSS data
 #' 
 #' Asssesses TSS data against the appropriate criteria and produces columns for excursions
-#' @param TSS_data
+#' @param TSS_data dataframe with TSS data and criteria values
 #' @return dataframe with the following columns added; 'excursion_cen'
 #' @export
-#' @example
+#' @examples 
 #' TP_assessment(TSS_data = "your-TSS-data")
 #' 
 

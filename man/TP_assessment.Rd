@@ -6,9 +6,16 @@
 \usage{
 TP_assessment(TP_data)
 }
+\arguments{
+\item{TP_data}{dataframe with TP data and criteria values}
+}
 \value{
 dataframe with the following columns added; 'excursion_cen'
 }
 \description{
 Asssesses TP data against the appropriate criteria and produces columns for excursions
+}
+\examples{
+TP_assessment(TP_data = "your-TP-data")
+
 }

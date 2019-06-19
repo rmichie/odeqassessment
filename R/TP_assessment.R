@@ -1,10 +1,10 @@
 #' Assess TP data
 #' 
 #' Asssesses TP data against the appropriate criteria and produces columns for excursions
-#' @param TP_data
+#' @param TP_data dataframe with TP data and criteria values
 #' @return dataframe with the following columns added; 'excursion_cen'
 #' @export
-#' @example
+#' @examples
 #' TP_assessment(TP_data = "your-TP-data")
 #' 
 

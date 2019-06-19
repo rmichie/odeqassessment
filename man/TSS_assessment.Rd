@@ -6,9 +6,16 @@
 \usage{
 TSS_assessment(TSS_data)
 }
+\arguments{
+\item{TSS_data}{dataframe with TSS data and criteria values}
+}
 \value{
 dataframe with the following columns added; 'excursion_cen'
 }
 \description{
 Asssesses TSS data against the appropriate criteria and produces columns for excursions
+}
+\examples{
+TP_assessment(TSS_data = "your-TSS-data")
+
 }

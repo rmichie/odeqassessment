@@ -17,3 +17,6 @@ a dataframe with relevant Ecoli criteria and excursion variables added
 \description{
 Assesses Ecoli data against the standard
 }
+\examples{
+function(df = your_ecoli_data, datetime_column = "sample_datetime")
+}

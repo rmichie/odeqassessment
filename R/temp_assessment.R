@@ -10,7 +10,7 @@
 #' @param criteria name of column containing temperature criteria values
 #' @return a dataframe with relevant temperature spawning, criteria, and excursion variables added
 #' @export
-#' @example
+#' @examples
 #' temp_assessment(df = temperature-data, datetime_column = "sample_datetime",
 #' spawn_start = "spawn_start", spawn_end = "spawn_end",
 #' results = "Results_cen", criteria = "temp_crit")

@@ -28,3 +28,8 @@ a dataframe with relevant temperature spawning, criteria, and excursion variable
 Creates three new variables for each sample summarizing the data within the last 3 years at that station; the number of
 excursions, the number of samples during the critical period, and the number of samples during the spawning period.
 }
+\examples{
+temp_assessment(df = temperature-data, datetime_column = "sample_datetime",
+spawn_start = "spawn_start", spawn_end = "spawn_end",
+results = "Results_cen", criteria = "temp_crit")
+}

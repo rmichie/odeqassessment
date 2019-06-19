@@ -5,7 +5,7 @@
 #' @param datetime_column POSIXCT column name containing sample datetimes
 #' @return a dataframe with relevant Ecoli criteria and excursion variables added
 #' @export
-#' @example function(df = your_ecoli_data, datetime_column = "sample_datetime")
+#' @examples function(df = your_ecoli_data, datetime_column = "sample_datetime")
 
 Fresh_Contact_rec <- function(df, datetime_column = "sample_datetime"){
   print("Begin fresh contact rec analysis")
@@ -93,38 +93,5 @@ Fresh_Contact_rec <- function(df, datetime_column = "sample_datetime"){
   
   print("Finish fresh contact rec analysis")
   return(fresh_analysis)
-  
-  # Data review -------------------------------------------------------------
-  
-  # IR_export(fresh_analysis, "Parameters/Bacteria/Data Review", "Bacteria_Fresh_Contact", "data" )
-  # 
-  # 
-  # # do the conparisons listed in methodology
-  # # Category 5: ??? 1 geomean over 126 OR for 10 or more samples > 10% exceedances of 406 according to the binomial
-  # # Category 3: : no 90 day  geomean AND < 10 samples with no exceedances of 406
-  # # Category 3B: no 90 day geomean AND < 10 samples with one or more exceedances of 406
-  # # Categpry 2: all geomeans < 126 AND AUs with 10 or more samples have < 10% exceedances of 406 according to the binomial. 
-  # fresh_AU_summary <-  fresh_analysis %>%
-  #   group_by(AU_ID) %>%
-  #   # list out the maxium geometric mean per AU
-  #   summarise(OWRD_Basin = first(OWRD_Basin), 
-  #             Max_Geomean = ifelse(!all(is.na(geomean)),max(geomean, na.rm = TRUE),NA),
-  #             max.value  = max(Result_cen),
-  #             num_Samples = as.numeric(n()),
-  #             num_ss_excursions = as.numeric(sum(Result_cen > SS_Crit)),
-  #             critical_excursions = excursions_conv(num_Samples),
-  #             SS_Crit = max(SS_Crit),
-  #             Geomean_Crit = max(Geomean_Crit)) %>%
-  #   mutate(IR_category = ifelse((!is.na(Max_Geomean) &
-  #                                  Max_Geomean > Geomean_Crit) |
-  #                                 (num_Samples >= 5 & num_ss_excursions > critical_excursions), "Cat5", 
-  #                               ifelse(is.na(Max_Geomean) & max.value < SS_Crit & num_Samples < 5, "Cat3", 
-  #                                      ifelse(is.na(Max_Geomean) & max.value > SS_Crit & num_Samples < 5, "Cat3B",
-  #                                             ifelse(((!is.na(Max_Geomean) & Max_Geomean <= Geomean_Crit) | is.na(Max_Geomean)) &
-  #                                                      ((num_Samples >= 5 & num_ss_excursions <= critical_excursions | (num_Samples< 5 & !is.na(Max_Geomean)))), 
-  #                                                    "Cat2", "ERROR")))))
-  # 
-  # 
-  # 
   
 }

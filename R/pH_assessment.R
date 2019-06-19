@@ -1,10 +1,10 @@
 #' Assess pH data
 #' 
 #' Asssesses pH data against the appropriate criteria and produces columns for excursions, including whether they were high or low
-#' @param pH_data
+#' @param pH_data dataframe with pH data and criteria values
 #' @return dataframe with the following columns added; 'pH_violation', 'pH_violation_high', 'pH_violation_low.'
 #' @export
-#' @example
+#' @examples
 #' pH_assessment(pH_data = "your-pH-data")
 #' 
 
