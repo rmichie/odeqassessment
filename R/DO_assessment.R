@@ -203,7 +203,8 @@ DO_assessment <- function(df, datetime_column = "sample_datetime", spawn_start_c
                  spawn_excursion = if_else(1 %in% c(spwn_exc_inst, spwn_exc_7DADMean, spwn_exc_min), 1, 0),
                  excursion_cen = if_else(1 %in% c(yr_excursion, spawn_excursion), 1, 0)
                  ) %>% 
-    select(-startdate30, -startdate7)
+    select(-startdate30, -startdate7) %>% 
+    ungroup()
   
   # data <- data %>% mutate(excursion_cen = if_else(Statistical_Base == "30DADMean" & yr_excursion == 1 & DO_Class == "Cold Water",
   #                                                 if_else(is.na(DO_sat_30DADM) | DO_sat_30DADM < 90, 1, 0),
