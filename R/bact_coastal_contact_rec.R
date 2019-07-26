@@ -14,7 +14,7 @@ Coastal_Contact_rec <- function(df, datetime_column = "sample_datetime"){
   #create lists to get data out of for loops
   geomeanlist = list()
 
-  SampleStartDate <- as.symbol(date_col)
+  SampleStartDate <- as.symbol(datetime_column)
 
   # Water Contact Recreation - Coastal -----------------------------------
 
