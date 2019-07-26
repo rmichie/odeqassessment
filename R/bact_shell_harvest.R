@@ -7,11 +7,12 @@
 #' @export
 #' @examples function(df = your_ecoli_data, criteria = "bact-shell-crit")
 
-Shell_Harvest <- function(df, criteria = "bact_crit_percent") {
+Shell_Harvest <- function(df, per_criteria = "bact_crit_percent", ss_criteria = "bact_crit_ss") {
 
   print("Begin shellfish harvesting analysis")
 
-  Perc_Crit <- as.symbol(criteria)
+  Perc_Crit <- as.symbol(per_criteria)
+  SS_Crit <- as.symbol(ss_criteria)
 
   shell_harvest <- df %>%
     filter(BacteriaCode == 3,
@@ -22,15 +23,17 @@ Shell_Harvest <- function(df, criteria = "bact_crit_percent") {
     stop("No available data")
   }
 
-  shell_harvest_analysis <- shell_harvest %>%
-    group_by(MLocID, OWRD_Basin) %>%
-    summarise(num_samples = n(),
-              median = ifelse(num_samples >= 5, median(Result_cen), NA ),
-              num_exceed = sum(perc_exceed),
-              Perc_Crit = first(!!Perc_Crit),
-              SS_Crit = first(SS_Crit)
-    )
+  return(shell_harvest)
 
-  return(shell_harvest_analysis)
+  # shell_harvest_analysis <- shell_harvest %>%
+  #   group_by(MLocID, OWRD_Basin) %>%
+  #   summarise(num_samples = n(),
+  #             median = ifelse(num_samples >= 5, median(Result_cen), NA ),
+  #             num_exceed = sum(perc_exceed),
+  #             Perc_Crit = first(!!Perc_Crit),
+  #             SS_Crit = first(SS_Crit)
+  #   )
+  #
+  # return(shell_harvest_analysis)
 
 }

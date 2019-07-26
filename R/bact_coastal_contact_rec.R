@@ -70,7 +70,7 @@ Coastal_Contact_rec <- function(df, datetime_column = "sample_datetime"){
       #start of 90 day window
       geomean_date <- Coastal_singlestation$geomean_start_date[j]
       # end of 90 day window
-      enddate <- Coastal_singlestation$`!!SampleStartDate`[j]
+      enddate <- Coastal_singlestation[[SampleStartDate]][j]
 
       #create table for only samples in that window
       geomean_period <- Coastal_singlestation %>%
