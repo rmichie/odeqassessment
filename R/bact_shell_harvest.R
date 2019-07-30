@@ -19,9 +19,9 @@ Shell_Harvest <- function(df, per_criteria = "bact_crit_percent", ss_criteria = 
            Char_Name == "Fecal Coliform") %>%
     mutate(perc_exceed = ifelse(Result_cen > !!Perc_Crit, 1, 0))
 
-  if(nrow(shell_harvest) == 0) {
-    stop("No available data")
-  }
+  # if(nrow(shell_harvest) == 0) {
+  #   stop("No available data")
+  # }
 
   return(shell_harvest)
 

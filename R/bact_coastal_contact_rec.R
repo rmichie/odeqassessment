@@ -37,7 +37,8 @@ Coastal_Contact_rec <- function(df, datetime_column = "sample_datetime"){
 
 
   if(length(unique(Coastal$MLocID)) == 0) {
-    stop("No Enterococcus Data")
+    # stop("No Enterococcus Data")
+    return(Coastal %>% mutate(excursion_cen = NA))
   }
 
   # Geometric mean calculations --------------------------------------------
