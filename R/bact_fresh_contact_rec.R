@@ -24,7 +24,8 @@ Fresh_Contact_rec <- function(df, datetime_column = "sample_datetime"){
 
 
   if(length(unique(fresh_contact$MLocID)) == 0) {
-    stop("No E coli Data")
+    print("No E coli Data")
+    return(fresh_contact)
   }
 
   # Geometric mean calculations --------------------------------------------
