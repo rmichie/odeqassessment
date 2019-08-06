@@ -21,19 +21,19 @@ Coastal_Contact_rec <- function(df, datetime_column = "sample_datetime"){
   # Get filter down to data needed only for coastal contact rec data
   # Bacteria code #2 and Entero
   Coastal <- df %>%
-    filter(BacteriaCode %in%  c(1, 3),
-           Char_Name == "Enterococcus") %>%
+    dplyr::filter(BacteriaCode %in%  c(1, 3),
+                  Char_Name == "Enterococcus") %>%
     #add blank columns to be filled in during analysis phase
-    mutate(geomean = as.numeric(),
-           count_period = as.numeric(),
-           n_above_crit = as.numeric(),
-           perc_above_crit_10 = as.numeric(),
-           n_samples_greater_perc_crit = as.numeric(),
-           less_5 = as.numeric(),
-           Max_value = as.numeric(),
-           SS_Crit = NaN,
-           Geomean_Crit = 35,
-           Perc_Crit = 130)
+    dplyr::mutate(geomean = as.numeric(NaN),
+                  count_period = as.numeric(NaN),
+                  n_above_crit = as.numeric(NaN),
+                  perc_above_crit_10 = as.numeric(NaN),
+                  n_samples_greater_perc_crit = as.numeric(NaN),
+                  less_5 = as.numeric(NaN),
+                  Max_value = as.numeric(NaN),
+                  SS_Crit = NaN,
+                  Geomean_Crit = 35,
+                  Perc_Crit = 130)
 
 
   if(length(unique(Coastal$MLocID)) == 0) {
