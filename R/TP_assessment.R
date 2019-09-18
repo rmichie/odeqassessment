@@ -9,11 +9,27 @@
 #'
 
 TP_assessment <- function(TP_data) {
-  TP_summary <- TP_data %>%
-    mutate(excursion_cen = if_else(!is.na(TP_crit),
+  options(scipen = 999)
+  tmdl_lookup <- read.csv("//deqhq1/wqnps/Status_and_Trend_Reports/Lookups_Statewide/TMDL_targets.csv")
+
+  tp_sum_medians <- TP_data %>%
+    dplyr::mutate(tp_year = lubridate::year(sample_datetime),
+                  tp_month = if_else(tp_summer == 1, lubridate::month("2019-06-01 00:00:00", label = TRUE, abbr = TRUE),
+                                     lubridate::month("2019-01-01 00:00:00", label = TRUE, abbr = TRUE))) %>%
+    dplyr::filter(stat.base == "median") %>% dplyr::group_by(MLocID, Char_Name, Statistical_Base, tp_year, tp_month, tp_summer) %>%
+    dplyr::summarise(tp_median = median(Result_cen, na.rm = TRUE),
+                     Result_cen = tp_median,
+                     TP_crit = unique(TP_crit),
+                     excursion_cen = if_else(tp_median > TP_crit, 1, 0)
+    ) %>% ungroup()
+
+  TP_summary <- TP_data %>% dplyr::filter(!MLocID %in% unique(tp_sum_medians$MLocID)) %>%
+    dplyr::mutate(excursion_cen = if_else(!is.na(TP_crit),
                                    if_else(Result_cen > TP_crit, 1, 0),
                                    NaN)
     )
 
-  return(TP_summary)
+  TP_data_combined <- bind_rows(TP_summary, tp_sum_medians)
+
+  return(TP_data_combined)
 }
