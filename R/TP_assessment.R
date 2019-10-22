@@ -14,9 +14,12 @@ TP_assessment <- function(TP_data) {
 
   tp_sum_medians <- TP_data %>%
     dplyr::mutate(tp_year = lubridate::year(sample_datetime),
-                  tp_month = if_else(tp_summer == 1, lubridate::month("2019-06-01 00:00:00", label = TRUE, abbr = TRUE),
-                                     lubridate::month("2019-01-01 00:00:00", label = TRUE, abbr = TRUE))) %>%
-    dplyr::filter(stat.base == "median") %>% dplyr::group_by(MLocID, Char_Name, Statistical_Base, tp_year, tp_month, tp_summer) %>%
+                  tp_month = if_else(tp_summer == 1, lubridate::month("2019-07-01 00:00:00", label = TRUE, abbr = TRUE),
+                                     lubridate::month("2019-01-01 00:00:00", label = TRUE, abbr = TRUE)),
+                  sample_datetime = if_else(tp_summer == 1, as.POSIXct("2019-07-01 00:00:00"),
+                                            as.POSIXct("2019-01-01 00:00:00"))
+                  ) %>%
+    dplyr::filter(stat.base == "median") %>% dplyr::group_by(MLocID, Char_Name, Statistical_Base, tp_year, tp_month, tp_summer, sample_datetime) %>%
     dplyr::summarise(tp_median = median(Result_cen, na.rm = TRUE),
                      Result_cen = tp_median,
                      TP_crit = unique(TP_crit),
@@ -30,6 +33,7 @@ TP_assessment <- function(TP_data) {
     )
 
   TP_data_combined <- bind_rows(TP_summary, tp_sum_medians)
+  TP_data_combined[is.na(TP_data_combined$excursion_cen),"excursion_cen"] <- 0
 
   return(TP_data_combined)
 }
