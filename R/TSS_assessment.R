@@ -15,7 +15,7 @@ TSS_assessment <- function(TSS_data) {
                                   NaN)
     )
 
-  TSS_summary[is.na(TSS_summary$excursion_cen),"excursion_cen"] <- 0
+  # TSS_summary[is.na(TSS_summary$excursion_cen),"excursion_cen"] <- 0
 
   return(TSS_summary)
 }

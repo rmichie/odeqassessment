@@ -39,7 +39,7 @@ TP_assessment <- function(TP_data) {
     TP_data_combined <- bind_rows(TP_summary, tp_sum_medians)
   } else {TP_data_combined <- TP_summary}
 
-  TP_data_combined[is.na(TP_data_combined$excursion_cen),"excursion_cen"] <- 0
+  # TP_data_combined[is.na(TP_data_combined$excursion_cen),"excursion_cen"] <- 0
 
   return(TP_data_combined)
 }
